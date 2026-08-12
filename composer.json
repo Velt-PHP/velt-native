@@ -1,0 +1,30 @@
+{
+    "name": "velt/native",
+    "description": "Native Android bridge and runtime contracts for Velt.",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": "^8.4"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^11.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "Velt\\Native\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Velt\\Native\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": "phpunit"
+    },
+    "config": {
+        "sort-packages": true
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
