@@ -13,6 +13,8 @@
 
 Because the package is not yet indexed on Packagist, experimental skeletons temporarily declare its public GitHub VCS source. This is a release limitation, not a local path dependency.
 
+> Local integration note: the `velt/kernel` Composer path repository configured in `composer.json` points to the sibling checkout `../veltphp-kernel` for local tests only. It must be replaced by a versioned distribution before release.
+
 ## Current API
 
 ```php
@@ -28,6 +30,22 @@ $device->vibrate();
 ```
 
 `NativePhpBridge` detects the actual `nativephp_call()` function. Outside a compatible Android runtime it fails explicitly with `NativeBridgeException`; it never pretends a native call succeeded.
+
+`NativeKernelRuntime` adapts the portable Kernel lifecycle to the native package. It delegates lifecycle decisions to `Velt\Kernel\Application` and does not accept or retain Android `Activity` or `Context` objects. The current Composer path link is only for local integration tests; Android process, thread and lifecycle ownership remain outside this PHP adapter.
+
+`NativeRuntimeMetrics` exports PHP-side boot duration, memory usage, call/callback latency and host-reported ANR counts. The local suite also exercises 1,000 PHP interactions; this is not a substitute for Android instrumented rotation, process, memory-pressure or ANR tests.
+
+## Native capability contract
+
+The PHP facade uses stable capability names and rejects malformed native responses. Permission-sensitive operations must return a structured error such as `permission_denied`, `capability_not_available` or `operation_failed`; these errors are exposed as `NativeCapabilityException` and are never converted to a successful fallback.
+
+- `Device.GetInfo`: returns device information.
+- `Device.Vibrate`: returns a boolean success result.
+- `Device.ToggleFlashlight`: returns success and state, or a typed permission/error response.
+- `Ui.Dialog` and `Ui.Toast`: require a non-empty message and return success.
+- `Storage.ReadFile`, `Storage.WriteFile` and `Storage.DeleteFile`: accept only relative paths inside the application sandbox.
+
+The Android implementation owns permission requests and must complete them before returning the corresponding bridge response. The current PHP bridge call is synchronous; asynchronous callbacks, cancellation and timeout propagation require the Kotlin/JNI runtime and are not claimed by this package yet. A future callback adapter must preserve the same typed error envelope and correlate each response with its request id.
 
 ## Testing with the fake bridge
 
