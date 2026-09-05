@@ -6,6 +6,6 @@ namespace Velt\Native\Exceptions;
 
 use RuntimeException;
 
-final class NativeBridgeException extends RuntimeException
+class NativeBridgeException extends RuntimeException
 {
 }

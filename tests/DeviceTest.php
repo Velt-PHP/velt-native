@@ -7,6 +7,7 @@ namespace Velt\Native\Tests;
 use PHPUnit\Framework\TestCase;
 use Velt\Native\Device;
 use Velt\Native\Testing\FakeNativeBridge;
+use Velt\Native\Exceptions\NativeCapabilityException;
 
 final class DeviceTest extends TestCase
 {
@@ -38,5 +39,29 @@ final class DeviceTest extends TestCase
             ],
             $bridge->calls(),
         );
+    }
+
+    public function testFlashlightPermissionErrorsAreTyped(): void
+    {
+        $bridge = (new FakeNativeBridge())->respondWith('Device.ToggleFlashlight', [
+            'error' => ['code' => 'permission_denied', 'message' => 'Camera permission is required.'],
+        ]);
+
+        $this->expectException(NativeCapabilityException::class);
+        $this->expectExceptionMessage('Camera permission is required.');
+
+        (new Device($bridge))->toggleFlashlight();
+    }
+
+    public function testMalformedDeviceResponsesFailInsteadOfFallingBack(): void
+    {
+        $bridge = (new FakeNativeBridge())->respondWith('Device.Vibrate', []);
+
+        try {
+            (new Device($bridge))->vibrate();
+            self::fail('Expected invalid response exception.');
+        } catch (NativeCapabilityException $exception) {
+            self::assertSame('invalid_native_response', $exception->codeName());
+        }
     }
 }
