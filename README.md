@@ -47,6 +47,12 @@ The PHP facade uses stable capability names and rejects malformed native respons
 
 The Android implementation owns permission requests and must complete them before returning the corresponding bridge response. The current PHP bridge call is synchronous; asynchronous callbacks, cancellation and timeout propagation require the Kotlin/JNI runtime and are not claimed by this package yet. A future callback adapter must preserve the same typed error envelope and correlate each response with its request id.
 
+## UI node protocol
+
+`UiProtocol` negotiates version `1` before a renderer consumes a `UiDocument`. `UiNodeFactory` supports `Column`, `Row`, `Stack`, `ScrollView`, `Text`, `Image`, `Icon`, `Divider`, `Button`, `Pressable`, `Input`, `Toggle`, `List`, `ListItem`, `NavigationBar` and `LoadingIndicator`. Every node requires an explicit stable `id` and `key`, carries serializable props/children and may carry accessibility metadata.
+
+`UiTheme` exposes validated light/dark modes and portable scalar tokens. `UiNavigation` produces explicit `push`, `replace` and `back` commands. These PHP contracts do not render UI; the Android Compose renderer must consume the serialized document without using a WebView and must provide its own instrumented and snapshot tests.
+
 ## Testing with the fake bridge
 
 ```php
