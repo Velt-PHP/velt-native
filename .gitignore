@@ -3,3 +3,6 @@
 /.phpunit.result.cache
 composer.lock
 /.idea
+/android/.gradle/
+/android/local.properties
+/android/**/build/

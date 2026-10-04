@@ -39,34 +39,34 @@ fun VeltDocument(document: UiDocument, onEvent: (String, String) -> Unit) {
 @Composable
 private fun RenderNode(node: UiNode, onEvent: (String, String) -> Unit) {
     val modifier = Modifier.semantics {
-        node.accessibility.optString("label").takeIf { it.isNotEmpty() }?.let { contentDescription = it }
+        node.accessibility.stringValue("label").takeIf { it.isNotEmpty() }?.let { contentDescription = it }
     }
     when (node.type) {
         "Column" -> Column(modifier) { node.children.forEach { RenderNode(it, onEvent) } }
         "Row" -> Row(modifier) { node.children.forEach { RenderNode(it, onEvent) } }
         "Stack" -> Box(modifier) { node.children.forEach { RenderNode(it, onEvent) } }
         "ScrollView" -> Column(modifier.verticalScroll(rememberScrollState())) { node.children.forEach { RenderNode(it, onEvent) } }
-        "Text" -> Text(node.props.optString("text"), modifier)
+        "Text" -> Text(node.props.stringValue("text"), modifier)
         "Image" -> Image(
-            painter = painterResource(node.props.getInt("resource")),
-            contentDescription = node.accessibility.optString("label").ifEmpty { null },
+            painter = painterResource(node.props.intValue("resource")),
+            contentDescription = node.accessibility.stringValue("label").ifEmpty { null },
             modifier = modifier
         )
         "Icon" -> {
-            check(node.props.optString("name") == "info") { "Unsupported icon name" }
-            Icon(Icons.Default.Info, node.accessibility.optString("label").ifEmpty { null }, modifier)
+            check(node.props.stringValue("name") == "info") { "Unsupported icon name" }
+            Icon(Icons.Default.Info, node.accessibility.stringValue("label").ifEmpty { null }, modifier)
         }
         "Divider" -> HorizontalDivider(modifier)
         "Button", "Pressable" -> Button(onClick = { onEvent(node.id, "press") }, modifier = modifier) {
             node.children.forEach { RenderNode(it, onEvent) }
-            if (node.children.isEmpty()) Text(node.props.optString("text"))
+            if (node.children.isEmpty()) Text(node.props.stringValue("text"))
         }
         "Input" -> {
-            val value = remember(node.id) { mutableStateOf(node.props.optString("value")) }
+            val value = remember(node.id) { mutableStateOf(node.props.stringValue("value")) }
             OutlinedTextField(value.value, { value.value = it; onEvent(node.id, "input:$it") }, modifier)
         }
         "Toggle" -> {
-            val checked = remember(node.id) { mutableStateOf(node.props.optBoolean("checked")) }
+            val checked = remember(node.id) { mutableStateOf(node.props.booleanValue("checked")) }
             Switch(checked.value, { checked.value = it; onEvent(node.id, "toggle:$it") }, modifier)
         }
         "List" -> LazyColumn(modifier) { items(node.children, key = { it.key }) { RenderNode(it, onEvent) } }
