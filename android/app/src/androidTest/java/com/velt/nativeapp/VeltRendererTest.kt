@@ -3,6 +3,7 @@ package com.velt.nativeapp
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.junit4.createComposeRule
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performClick
 import org.junit.Rule
 import org.junit.Test
 
@@ -17,7 +18,7 @@ class VeltRendererTest {
         )
         var event = ""
 
-        composeRule.setContent { VeltDocument(document) { id, action -> event = \"$id:$action\" } }
+        composeRule.setContent { VeltDocument(document) { id, action -> event = "$id:$action" } }
         composeRule.onNodeWithText("Velt").assertIsDisplayed()
         composeRule.onNodeWithText("Continue").performClick()
         assert(event == "action:press")

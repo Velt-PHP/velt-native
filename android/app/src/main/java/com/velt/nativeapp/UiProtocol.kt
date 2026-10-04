@@ -1,14 +1,21 @@
 package com.velt.nativeapp
 
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonObject
+import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.booleanOrNull
+import kotlinx.serialization.json.contentOrNull
+import kotlinx.serialization.json.intOrNull
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 
 data class UiNode(
     val type: String,
     val id: String,
     val key: String,
-    val props: JSONObject,
-    val accessibility: JSONObject,
+    val props: JsonObject,
+    val accessibility: JsonObject,
     val children: List<UiNode>
 )
 
@@ -29,32 +36,39 @@ object UiProtocol {
     }
 
     fun decode(json: String): UiDocument {
-        val document = JSONObject(json)
-        val version = document.optInt("protocol_version", -1)
+        val document = Json.parseToJsonElement(json).jsonObject
+        val version = document.int("protocol_version", -1)
         check(version == CURRENT_VERSION) { "Unsupported UI protocol version: $version" }
-        val themeMode = document.optJSONObject("theme")?.optString("mode", "light") ?: "light"
+        val themeMode = document["theme"]?.jsonObject?.string("mode") ?: "light"
         check(themeMode == "light" || themeMode == "dark") { "Unsupported UI theme mode: $themeMode" }
-        return UiDocument(version, decodeNode(document.getJSONObject("root")), themeMode)
+        return UiDocument(version, decodeNode(document.getValue("root").jsonObject), themeMode)
     }
 
-    private fun decodeNode(json: JSONObject): UiNode {
-        val type = json.optString("type")
-        val id = json.optString("id")
-        val key = json.optString("key")
+    private fun decodeNode(json: JsonObject): UiNode {
+        val type = json.string("type")
+        val id = json.string("id")
+        val key = json.string("key")
         check(type in supportedTypes) { "Unsupported UI node type: $type" }
         check(id.isNotEmpty() && key.isNotEmpty()) { "UI nodes require stable id and key" }
 
-        val values = json.optJSONArray("children") ?: JSONArray()
-        val children = buildList {
-            for (index in 0 until values.length()) add(decodeNode(values.getJSONObject(index)))
-        }
+        val children = json["children"]?.jsonArray?.map { decodeNode(it.jsonObject) } ?: emptyList()
         return UiNode(
             type,
             id,
             key,
-            json.optJSONObject("props") ?: JSONObject(),
-            json.optJSONObject("accessibility") ?: JSONObject(),
+            json["props"]?.jsonObject ?: JsonObject(emptyMap()),
+            json["accessibility"]?.jsonObject ?: JsonObject(emptyMap()),
             children
         )
     }
 }
+
+private fun JsonObject.string(name: String): String = this[name]?.jsonPrimitive?.contentOrNull ?: ""
+
+private fun JsonObject.int(name: String, fallback: Int): Int = this[name]?.jsonPrimitive?.intOrNull ?: fallback
+
+fun JsonObject.stringValue(name: String): String = string(name)
+
+fun JsonObject.intValue(name: String): Int = int(name, 0)
+
+fun JsonObject.booleanValue(name: String): Boolean = this[name]?.jsonPrimitive?.booleanOrNull ?: false
