@@ -53,6 +53,12 @@ The Android implementation owns permission requests and must complete them befor
 
 `UiTheme` exposes validated light/dark modes and portable scalar tokens. `UiNavigation` produces explicit `push`, `replace` and `back` commands. These PHP contracts do not render UI; the Android Compose renderer must consume the serialized document without using a WebView and must provide its own instrumented and snapshot tests.
 
+## Android shell
+
+The `android` directory contains the Kotlin/Compose application shell. It pins the Android Gradle Plugin, Kotlin, Compose BOM, compile SDK and minimum SDK in Gradle files. The `JniNativePhpTransport` boundary is deliberately explicit: the host must provide the `nativephpCall` JNI symbol; a missing symbol is a runtime integration error, not a fallback. The shell decodes and validates the PHP document, negotiates protocol version `1`, renders supported nodes with Compose and sends node events back through the transport.
+
+Run from an Android-equipped environment with `./gradlew :app:test` and `./gradlew :app:connectedCheck`. The current workstation cannot execute these commands because Java, Gradle and the Android SDK are not installed; emulator x86_64 and arm64 device evidence remains required before closing the issue.
+
 ## Testing with the fake bridge
 
 ```php
