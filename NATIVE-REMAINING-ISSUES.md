@@ -61,6 +61,12 @@ Aucune dependance fonctionnelle, mais requiert JDK 17, Android SDK et acces aux 
 
 ## NATIVE-02 - Implementer le transport JNI NativePHP reel
 
+### Etat d'implementation au 2026-10-07
+
+Le contrat Kotlin et les tests JVM sont implementes. La bibliotheque NativePHP reelle et les preuves JNI instrumentees restent a fournir par le runtime hote.
+
+Retest shell Android du 2026-10-07: `:app:connectedDebugAndroidTest` passe sur `SCG09` API 35 arm64. L'APK ne contient encore aucune bibliotheque `libnativephp.so`; le test JNI reel reste donc bloque par l'integration du runtime hote.
+
 ### Objectif
 
 Relier le transport Kotlin a l'execution PHP NativePHP reelle sans fake ni fallback silencieux.
@@ -73,24 +79,24 @@ Relier le transport Kotlin a l'execution PHP NativePHP reelle sans fake ni fallb
 
 ### Criteres d'acceptation
 
-- [ ] La bibliotheque JNI est chargee explicitement et son absence produit une erreur typee.
+- [x] La bibliotheque JNI est chargee explicitement et son absence produit une erreur typee.
 - [ ] `nativephpCall` est implemente par le runtime hote et non par un double de test.
-- [ ] Chaque requete possede un identifiant stable et unique.
-- [ ] Chaque reponse indique son identifiant, son statut et son erreur eventuelle.
-- [ ] Les reponses invalides, erreurs PHP, bridge indisponible et capability inconnue echouent explicitement.
+- [x] Chaque requete possede un identifiant stable et unique.
+- [x] Chaque reponse indique son identifiant, son statut et son erreur eventuelle.
+- [x] Les reponses invalides, erreurs PHP, bridge indisponible et capability inconnue echouent explicitement.
 - [ ] Les callbacks Kotlin vers PHP sont corréles a la requete d'origine.
-- [ ] Les timeouts, annulations et interruptions ferment proprement la requete.
-- [ ] Aucun appel JNI bloquant n'est execute sur le main thread.
+- [x] Les timeouts, annulations et interruptions ferment proprement la requete.
+- [x] Aucun appel JNI bloquant n'est execute sur le main thread.
 
 ### Tests
 
 - [ ] Test JNI reel sur emulateur x86_64.
 - [ ] Test JNI reel sur appareil arm64.
-- [ ] Test bridge absent.
-- [ ] Test reponse invalide.
-- [ ] Test erreur PHP.
-- [ ] Test timeout, annulation et interruption.
-- [ ] Test callback reussi et callback en erreur.
+- [x] Test bridge absent.
+- [x] Test reponse invalide.
+- [x] Test erreur PHP.
+- [x] Test timeout, annulation et interruption.
+- [x] Test callback reussi et callback en erreur au niveau JVM.
 
 ### Dependances
 
