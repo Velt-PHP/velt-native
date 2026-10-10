@@ -1,4 +1,5 @@
 /vendor/
+android/*validation-logcat*.txt
 /.phpunit.cache/
 /.phpunit.result.cache
 composer.lock

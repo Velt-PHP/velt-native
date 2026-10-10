@@ -219,3 +219,32 @@ L'issue est validee uniquement lorsque:
 - `:app:connectedDebugAndroidTest` passe sur ce telephone;
 - les preuves de versions, installation, logs et hash sont conservees;
 - la meme procedure est reproductible par une seconde personne.
+
+## Resultat de la validation du 2026-10-04
+
+- Appareil: `SM-A217F`.
+- Serial ADB: `RZ8R2116WPH`.
+- Android: API `31`.
+- ABI: `arm64-v8a,armeabi-v7a,armeabi`.
+- Installation APK: `Success`.
+- Lancement avec `monkey`: reussi.
+- `:app:test`: `BUILD SUCCESSFUL`.
+- `:app:connectedDebugAndroidTest`: `BUILD SUCCESSFUL`, 1 test execute.
+- SHA-256 APK debug: `8EA0660FC71009C92EE9D6570E815FF7C6F2E1DCC89A697553A4714736A78B79`.
+- Aucun `FATAL EXCEPTION` detecte dans le filtrage Logcat realise.
+
+La validation sur appareil physique arm64 est donc reussie. La validation complete de la matrice Android necessite encore un passage sur emulateur x86_64 API 35 si cette cible est exigee par la release.
+
+## Retest du 2026-10-07
+
+- Appareil: `SCG09`.
+- Serial ADB: `R5CR3244YYD`.
+- Android: API `35`.
+- ABI: `arm64-v8a,armeabi-v7a,armeabi`.
+- Installation APK: `Success` avec `adb install -r`.
+- `:app:test`: `BUILD SUCCESSFUL`.
+- `:app:assembleDebug`: `BUILD SUCCESSFUL`.
+- `:app:connectedDebugAndroidTest`: `BUILD SUCCESSFUL`, 1 test execute.
+- SHA-256 APK debug: `C24529AF6D9EFE2DEBF90B3516634267F85CC4F1727228261444F0CFC7DDDB57`.
+- Aucun `FATAL EXCEPTION` ou `UnsatisfiedLinkError` de `com.velt.nativeapp` detecte dans les logs filtres.
+- La bibliotheque NativePHP reelle n'est pas encore presente dans l'APK; ce retest ne constitue donc pas une preuve du round-trip JNI.

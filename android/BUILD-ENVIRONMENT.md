@@ -42,7 +42,8 @@ Sur Linux/macOS, utiliser les scripts `gradlew` et les chemins correspondants du
 - APK: `app/build/outputs/apk/debug/app-debug.apk`.
 - SHA-256 APK debug: `8EA0660FC71009C92EE9D6570E815FF7C6F2E1DCC89A697553A4714736A78B79`.
 - Manifeste: compile SDK 35, `MainActivity` launcher; aucune permission Android explicite dans le manifeste source.
-- `:app:connectedCheck`: compilation instrumentee validee, execution non realisee car aucun appareil ADB n'etait connecte.
+- `:app:connectedDebugAndroidTest`: passe sur appareil physique `SM-A217F` API 31, ABI `arm64-v8a`; 1 test execute.
+- `:app:connectedCheck`: valide sur appareil physique arm64; le passage emulateur x86_64 reste a produire pour fermer la matrice complete.
 
 ## Installation et test connecte
 
